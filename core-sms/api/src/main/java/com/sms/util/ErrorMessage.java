@@ -1,8 +1,5 @@
 package com.sms.util;
 
-import lombok.experimental.UtilityClass;
-
-@UtilityClass
 public class ErrorMessage {
     public static final String MESSAGE_ID_INVALID = "MessageId invalid";
     public static final String KEYWORD_INVALID = "Keyword invalid";

@@ -30,5 +30,12 @@ public class SmsValidate {
                 || !smsRequest.getDestination().matches(Constant.PHONE_REGEX)) {
             throw new BaseResponseException(ErrorCode.BAD_REQUEST, ErrorMessage.DESTINATION_INVALID);
         }
+
+        // validate shortMessage
+        if (StringUtil.isNullOrEmpty(smsRequest.getShortMessage())
+                || smsRequest.getShortMessage().length() > 480
+                || !smsRequest.getShortMessage().matches(Constant.REgEX_ASCII)) {
+            throw new BaseResponseException(ErrorCode.BAD_REQUEST, ErrorMessage.SHORT_MESSAGE_INVALID);
+        }
     }
 }
