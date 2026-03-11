@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import com.consumer.sms.util.Constant;
 import java.util.Properties;
 
 public class DbPool {
@@ -11,10 +12,10 @@ public class DbPool {
     public static void initialize(Properties props) {
         try {
             HikariConfig config = new HikariConfig();
-            config.setJdbcUrl(props.getProperty("db.url"));
-            config.setUsername(props.getProperty("db.username"));
-            config.setPassword(props.getProperty("db.password"));
-            config.setMaximumPoolSize(Integer.parseInt(props.getProperty("pool.maximumPoolSize", "10")));
+            config.setJdbcUrl(props.getProperty(Constant.Property.DB_URL));
+            config.setUsername(props.getProperty(Constant.Property.DB_USERNAME));
+            config.setPassword(props.getProperty(Constant.Property.DB_PASSWORD));
+            config.setMaximumPoolSize(Integer.parseInt(props.getProperty(Constant.Property.POOL_MAXIMUM_POOL_SIZE, "10")));
             ds = new HikariDataSource(config);
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize DB pool", e);

@@ -17,10 +17,10 @@ public class DbPool {
                 props.load(in);
             }
             HikariConfig config = new HikariConfig();
-            config.setJdbcUrl(props.getProperty("db.url"));
-            config.setUsername(props.getProperty("db.username"));
-            config.setPassword(props.getProperty("db.password"));
-            config.setMaximumPoolSize(Integer.parseInt(props.getProperty("pool.maximumPoolSize", "10")));
+            config.setJdbcUrl(props.getProperty(Constant.Property.DB_URL));
+            config.setUsername(props.getProperty(Constant.Property.DB_USERNAME));
+            config.setPassword(props.getProperty(Constant.Property.DB_PASSWORD));
+            config.setMaximumPoolSize(Integer.parseInt(props.getProperty(Constant.Property.POOL_MAXIMUM_POOL_SIZE, "10")));
             ds = new HikariDataSource(config);
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize DB pool", e);

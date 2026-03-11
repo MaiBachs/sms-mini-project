@@ -19,4 +19,11 @@ public class Constant {
         public static final String GET = "GET";
         public static final String POST = "POST";
     }
+
+    public static class Property {
+        public static final String DB_URL = "db.url";
+        public static final String DB_USERNAME = "db.username";
+        public static final String DB_PASSWORD = "db.password";
+        public static final String POOL_MAXIMUM_POOL_SIZE = "pool.maximumPoolSize";
+    }
 }

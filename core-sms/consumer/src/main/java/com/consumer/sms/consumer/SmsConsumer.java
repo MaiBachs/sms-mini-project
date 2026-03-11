@@ -27,11 +27,11 @@ public class SmsConsumer {
     private SmsService smsService = new SmsServiceImpl();
 
     public SmsConsumer(Connection rabbitConnection, Properties props, Jedis jedis) {
-        this.queueName = props.getProperty("rabbit.queue");
-        this.delayQueueName = props.getProperty("rabbit.delay.queue");
-        this.secretKey = props.getProperty("secret.key");
+        this.queueName = props.getProperty(Constant.Property.RABBIT_QUEUE);
+        this.delayQueueName = props.getProperty(Constant.Property.RABBIT_DELAY_QUEUE);
+        this.secretKey = props.getProperty(Constant.Property.SECRET_KEY);
         this.connection = rabbitConnection;
-        this.redisService = new RedisServiceImpl(jedis, Integer.parseInt(props.getProperty("sms.tps")));
+        this.redisService = new RedisServiceImpl(jedis, Integer.parseInt(props.getProperty(Constant.Property.SMS_TPS)));
     }
 
     public void start() throws Exception {
