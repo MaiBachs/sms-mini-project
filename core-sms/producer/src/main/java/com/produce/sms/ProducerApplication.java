@@ -2,14 +2,14 @@ package com.produce.sms;
 
 import com.produce.sms.config.RabbitMQConfig;
 import com.produce.sms.schedule.ScheduleScanSms;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.Properties;
 
 public class ProducerApplication {
-    private static final Logger log = LogManager.getLogger(ProducerApplication.class);
+    private static final Logger log = LoggerFactory.getLogger(ProducerApplication.class);
 
     public static void main(String[] args) throws Exception {
         log.info("Starting producer");
@@ -24,7 +24,7 @@ public class ProducerApplication {
         RabbitMQConfig rabbitMQConfig = new RabbitMQConfig();
         rabbitMQConfig.init(props);
         // call schedule
-        ScheduleScanSms scanner = new ScheduleScanSms(props);
+        ScheduleScanSms scanner = new ScheduleScanSms(props, rabbitMQConfig.getConnection());
         scanner.start();
     }
 }

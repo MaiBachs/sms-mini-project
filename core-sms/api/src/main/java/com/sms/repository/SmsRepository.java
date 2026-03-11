@@ -2,13 +2,11 @@ package com.sms.repository;
 
 import com.sms.entity.SmsTest;
 import com.sms.util.DbPool;
-
 import java.sql.*;
-import java.util.Date;
 
 public class SmsRepository {
     public boolean existsByMessageId(String messageId) {
-        String sql = "SELECT count(1) FROM sms_test WHERE messageid=?";
+        String sql = "SELECT count(1) FROM sms_test WHERE message_id=?";
         try (Connection conn = DbPool.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, messageId);
@@ -24,7 +22,7 @@ public class SmsRepository {
     }
 
     public void save(SmsTest sms) {
-        String sql = "INSERT INTO sms_test(messageid,keyword,sender,short_message,destination,partnercode,createddate,status) VALUES(?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO sms_test(message_id,keyword,sender,short_message,destination,partner_code,created_date,status) VALUES(?,?,?,?,?,?,?,?)";
         try (Connection conn = DbPool.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, sms.getMessageId());

@@ -2,15 +2,15 @@ package com.sms;
 
 import com.sms.controller.SmsController;
 import com.sms.util.DbPool;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import com.sun.net.httpserver.HttpServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SmsApplication {
-    private static final Logger log = LogManager.getLogger(SmsApplication.class);
+    private static final Logger log = LoggerFactory.getLogger(SmsApplication.class);
     public static void main(String[] args) throws IOException {
         log.info("Starting API server on port 8021");
         DbPool.initialize();

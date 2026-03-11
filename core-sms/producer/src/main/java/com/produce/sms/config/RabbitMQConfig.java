@@ -21,7 +21,6 @@ public class RabbitMQConfig {
         exchange = props.getProperty("rabbit.exchange");
         queue = props.getProperty("rabbit.queue");
         routingKey = props.getProperty("rabbit.routingKey");
-
         connection = factory.newConnection();
         initTopology();
     }

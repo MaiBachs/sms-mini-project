@@ -14,6 +14,8 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -40,6 +42,7 @@ public class SmsServiceImpl implements SmsService {
         try {
             response = smsFeignClient.sendSms(sms);
             smsTest.setStatus(Constant.SmsStatus.COMPLETE);
+            smsTest.setSendTime(new Date());
             smsRepository.save(smsTest);
         } catch (feign.RetryableException e) {
             log.info("=== Retry send sms to gateway ===");

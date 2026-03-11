@@ -1,7 +1,7 @@
 package com.produce.sms.repository;
 
 import com.produce.sms.entity.SmsTest;
-import com.produce.sms.util.DbPool;
+import com.produce.sms.config.DbPool;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,8 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SmsRepository {
-    public List<SmsTest> findByStatus(String status) {
-        String sql = "SELECT * FROM sms_test WHERE status = ?";
+    public List<SmsTest> findByStatusAndClaim(String status) {
+        String sql = "UPDATE sms_test SET status = 'PROCESSING' " +
+                "WHERE message_id IN (SELECT message_id FROM sms_test " +
+                "WHERE status = ? ORDER BY created_date LIMIT 2 FOR UPDATE SKIP LOCKED ) " +
+                "RETURNING *";
         List<SmsTest> list = new ArrayList<>();
         try (Connection conn = DbPool.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

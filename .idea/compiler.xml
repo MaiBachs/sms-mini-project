@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="producer" />
+        <module name="consumer" />
         <module name="api" />
       </profile>
       <profile name="Annotation profile for consumer-sms" enabled="true">
@@ -31,7 +32,6 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="consumer" target="17" />
       <module name="core-sms" target="17" />
     </bytecodeTargetLevel>
   </component>

@@ -20,7 +20,7 @@ import java.util.Date;
 public class SmsTest {
 
     @Id
-    @Column(name = "messageId")
+    @Column(name = "message_id")
     private String messageId;
 
     @Column(name = "keyword")
@@ -35,10 +35,10 @@ public class SmsTest {
     @Column(name = "destination")
     private String destination;
 
-    @Column(name = "partnerCode")
+    @Column(name = "partner_code")
     private String partnerCode;
 
-    @Column(name = "createdDate")
+    @Column(name = "created_date")
     private Date createdDate;
 
     @Column(name = "send_time")

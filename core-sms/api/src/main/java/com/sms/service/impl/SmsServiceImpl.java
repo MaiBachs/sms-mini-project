@@ -7,13 +7,12 @@ import com.sms.repository.SmsRepository;
 import com.sms.service.SmsService;
 import com.sms.util.Constant;
 import com.sms.validator.SmsValidate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 public class SmsServiceImpl implements SmsService {
-    private static final Logger log = LogManager.getLogger(SmsServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(SmsServiceImpl.class);
     private final SmsRepository smsRepository = new SmsRepository();
 
     @Override
