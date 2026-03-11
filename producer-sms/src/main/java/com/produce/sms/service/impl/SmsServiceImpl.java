@@ -15,7 +15,7 @@ public class SmsServiceImpl implements SmsService {
     private SmsRepository smsRepository;
 
     @Override
-    public List<SmsTest> getListSmsNoRead() {
-        return smsRepository.findByStatus(Constant.SmsStatus.NONE);
+    public List<SmsTest> getListSmsNoReadAndClaim() {
+        return smsRepository.getListSmsNoReadAndClaim(Constant.SmsStatus.NONE);
     }
 }

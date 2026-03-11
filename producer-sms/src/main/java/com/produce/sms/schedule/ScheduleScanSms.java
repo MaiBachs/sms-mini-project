@@ -3,7 +3,6 @@ package com.produce.sms.schedule;
 import com.produce.sms.entity.SmsTest;
 import com.produce.sms.repository.SmsRepository;
 import com.produce.sms.service.SmsService;
-import com.produce.sms.util.Constant;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -37,30 +36,23 @@ public class ScheduleScanSms {
     @Transactional
     public void scanSmsToSentRabbit() {
         log.info("=== Start scan send sms to rabbitmq time: {} ===", new Date());
-        List<SmsTest> smsTestList = smsService.getListSmsNoRead();
         ObjectMapper objectMapper = new ObjectMapper();
-        log.info("Sms size: {}", smsTestList.size());
-        for (SmsTest sms : smsTestList) {
-            smsExecutor.execute(() -> {
+        smsExecutor.execute(() -> {
+            log.info("Thread {} is processing",Thread.currentThread().getName());
+            List<SmsTest> smsList = smsService.getListSmsNoReadAndClaim();
+            log.info("Sms size: {}", smsList.size());
+            if (smsList.isEmpty()) {
+                return;
+            }
+            for (SmsTest sms : smsList) {
                 try {
-                    // log thread
-                    String threadName = Thread.currentThread().getName();
-                    log.info("Thread {} is processing SMS {}",
-                            threadName,
-                            sms.getMessageId());
-                    // update status to processing
-                    int updated = smsRepository.claimSms(sms.getMessageId(), Constant.SmsStatus.NONE, Constant.SmsStatus.PROCESSING);
-                    if (updated == 1) {
-                        String json = objectMapper.writeValueAsString(sms);
-                        rabbitTemplate.convertAndSend(exchange, routingKey, json);
-                        log.info("Sent SMS id: {}", sms.getMessageId());
-                    } else {
-                        log.debug("SMS {} already claimed", sms.getMessageId());
-                    }
+                    String json = objectMapper.writeValueAsString(sms);
+                    rabbitTemplate.convertAndSend(exchange, routingKey, json);
+                    log.info("Sent SMS id: {}", sms.getMessageId());
                 } catch (Exception e) {
                     log.error("Error sending SMS id: {}", sms.getMessageId(), e);
                 }
-            });
-        }
+            }
+        });
     }
 }

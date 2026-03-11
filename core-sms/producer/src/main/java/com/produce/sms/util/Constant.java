@@ -19,6 +19,8 @@ public class Constant {
         public static final String DB_URL = "db.url";
         public static final String DB_USERNAME = "db.username";
         public static final String DB_PASSWORD = "db.password";
+        public static final String SCAN_INTERVAL_MS = "scan.interval.ms";
+        public static final String SCAN_THREAD = "scan.thread";
         // other property keys as needed
     }
 }

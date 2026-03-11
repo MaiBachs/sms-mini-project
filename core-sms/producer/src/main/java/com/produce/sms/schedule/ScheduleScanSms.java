@@ -1,10 +1,10 @@
 package com.produce.sms.schedule;
 
 import com.produce.sms.entity.SmsTest;
-import com.produce.sms.repository.SmsRepository;
 import com.produce.sms.service.SmsService;
 import com.produce.sms.service.impl.SmsServiceImpl;
 import com.produce.sms.config.DbPool;
+import com.produce.sms.util.Constant;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +20,6 @@ import java.util.concurrent.*;
 public class ScheduleScanSms {
     private static final Logger log = LoggerFactory.getLogger(ScheduleScanSms.class);
     private final SmsService smsService = new SmsServiceImpl();
-    private final SmsRepository smsRepository = new SmsRepository();
     private final ObjectMapper mapper = new ObjectMapper();
     private String exchange;
     private String routingKey;
@@ -29,10 +28,10 @@ public class ScheduleScanSms {
     private Channel channel;
 
     public ScheduleScanSms(Properties props, Connection rabbitConnection) throws IOException {
-        exchange = props.getProperty("rabbit.exchange");
-        routingKey = props.getProperty("rabbit.routingKey");
-        scanInterval = Long.parseLong(props.getProperty("scan.interval.ms"));
-        executor = Executors.newFixedThreadPool(Integer.parseInt(props.getProperty("scan.thread")));
+        exchange = props.getProperty(Constant.Property.RABBIT_EXCHANGE);
+        routingKey = props.getProperty(Constant.Property.RABBIT_ROUTING_KEY);
+        scanInterval = Long.parseLong(props.getProperty(Constant.Property.SCAN_INTERVAL_MS));
+        executor = Executors.newFixedThreadPool(Integer.parseInt(props.getProperty(Constant.Property.SCAN_THREAD)));
         channel = rabbitConnection.createChannel();
     }
 
