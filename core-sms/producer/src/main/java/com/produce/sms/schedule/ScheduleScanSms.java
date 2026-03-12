@@ -25,14 +25,13 @@ public class ScheduleScanSms {
     private String routingKey;
     private long scanInterval;
     private ExecutorService executor;
-    private Channel channel;
+    private Connection rabbitConnection;
 
     public ScheduleScanSms(Properties props, Connection rabbitConnection) throws IOException {
         exchange = props.getProperty(Constant.Property.RABBIT_EXCHANGE);
         routingKey = props.getProperty(Constant.Property.RABBIT_ROUTING_KEY);
         scanInterval = Long.parseLong(props.getProperty(Constant.Property.SCAN_INTERVAL_MS));
         executor = Executors.newFixedThreadPool(Integer.parseInt(props.getProperty(Constant.Property.SCAN_THREAD)));
-        channel = rabbitConnection.createChannel();
     }
 
     public void start() {
@@ -48,6 +47,13 @@ public class ScheduleScanSms {
     }
 
     private void processSms() {
+        Channel channel = null;
+        try {
+            channel = rabbitConnection.createChannel();
+        } catch (IOException e) {
+            log.error("Error when create channel rabbitmq");
+            return;
+        }
         List<SmsTest> smsList = smsService.getListSmsNoReadAndClaim();
         log.info("Sms size: {}", smsList.size());
         if (smsList.isEmpty()) {

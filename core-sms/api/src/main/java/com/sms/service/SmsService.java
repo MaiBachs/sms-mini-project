@@ -6,4 +6,5 @@ import com.sms.dto.response.ReportSmsResponse;
 public interface SmsService {
     void receiverSmsApi(SmsRequest smsRequest);
     ReportSmsResponse reportSms();
+    byte[] exportReportCsv();
 }

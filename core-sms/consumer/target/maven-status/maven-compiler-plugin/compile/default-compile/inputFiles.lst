@@ -2,8 +2,8 @@ C:\Vnpay project\Mini test project\project\core-sms\consumer\src\main\java\com\c
 C:\Vnpay project\Mini test project\project\core-sms\consumer\src\main\java\com\consumer\sms\config\RabbitMQConfig.java
 C:\Vnpay project\Mini test project\project\core-sms\consumer\src\main\java\com\consumer\sms\config\RabbitMQDelayConfig.java
 C:\Vnpay project\Mini test project\project\core-sms\consumer\src\main\java\com\consumer\sms\config\RedisPool.java
-C:\Vnpay project\Mini test project\project\core-sms\consumer\src\main\java\com\consumer\sms\ConsumerApp.java
 C:\Vnpay project\Mini test project\project\core-sms\consumer\src\main\java\com\consumer\sms\consumer\SmsConsumer.java
+C:\Vnpay project\Mini test project\project\core-sms\consumer\src\main\java\com\consumer\sms\ConsumerApp.java
 C:\Vnpay project\Mini test project\project\core-sms\consumer\src\main\java\com\consumer\sms\dto\SmsRequest.java
 C:\Vnpay project\Mini test project\project\core-sms\consumer\src\main\java\com\consumer\sms\dto\SmsResponse.java
 C:\Vnpay project\Mini test project\project\core-sms\consumer\src\main\java\com\consumer\sms\entity\SmsTest.java

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -63,5 +64,36 @@ public class SmsServiceImpl implements SmsService {
                 .none(smsRepository.countByStatus(Constant.SmsStatus.NONE))
                 .totalSms(smsRepository.count())
                 .build();
+    }
+
+    @Override
+    public byte[] exportReportCsv() {
+        List<SmsTest> list = smsRepository.findAll();
+        String header = "messageId,keyword,sender,shortMessage,destination,partnerCode,createdDate,sendTime,status,description";
+        StringBuilder sb = new StringBuilder("\uFEFF").append(header).append('\n');
+        for (SmsTest s : list) {
+            sb.append(escapeCsv(s.getMessageId())).append(',');
+            sb.append(escapeCsv(s.getKeyword())).append(',');
+            sb.append(escapeCsv(s.getSender())).append(',');
+            sb.append(escapeCsv(s.getShortMessage())).append(',');
+            sb.append(escapeCsv(s.getDestination())).append(',');
+            sb.append(escapeCsv(s.getPartnerCode())).append(',');
+            sb.append(s.getCreatedDate() != null ? s.getCreatedDate().getTime() : "").append(',');
+            sb.append(s.getSendTime() != null ? s.getSendTime().getTime() : "").append(',');
+            sb.append(escapeCsv(s.getStatus())).append(',');
+            sb.append(escapeCsv(s.getDescription())).append('\n');
+        }
+        return sb.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+    }
+
+    private String escapeCsv(String value) {
+        if (value == null) {
+            return "";
+        }
+        String v = value.replace("\"", "\"\"");
+        if (v.contains(",") || v.contains("\"")) {
+            return "\"" + v + "\"";
+        }
+        return v;
     }
 }

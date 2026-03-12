@@ -36,4 +36,14 @@ public class SmsController {
         response.setData(service.reportSms());
         return responseFactory.success(response);
     }
+
+    @GetMapping("/report/export")
+    public ResponseEntity<byte[]> exportReport() {
+        log.info("=== Export report csv ===");
+        byte[] csv = service.exportReportCsv();
+        return ResponseEntity.ok()
+                .header("Content-Type", "text/csv; charset=UTF-8")
+                .header("Content-Disposition", "attachment; filename=\"report.csv\"")
+                .body(csv);
+    }
 }

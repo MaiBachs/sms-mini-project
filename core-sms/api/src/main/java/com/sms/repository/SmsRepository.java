@@ -1,8 +1,12 @@
 package com.sms.repository;
 
+import com.sms.dto.response.SmsTestReport;
 import com.sms.entity.SmsTest;
 import com.sms.util.DbPool;
 import java.sql.*;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SmsRepository {
     public boolean existsByMessageId(String messageId) {
@@ -67,5 +71,44 @@ public class SmsRepository {
             throw new RuntimeException(e);
         }
         return 0;
+    }
+
+    /**
+     * Retrieve every SMS row in the table. Used for exporting the report.
+     */
+    public List<SmsTestReport> findAll() {
+        String sql = "SELECT message_id,keyword,sender,short_message,destination,partner_code,created_date,send_time,status,description FROM sms_test";
+        List<SmsTestReport> list = new ArrayList<>();
+        try (Connection conn = DbPool.getConnection();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) {
+                SmsTestReport s = new SmsTestReport();
+                s.setMessageId(rs.getString("message_id"));
+                s.setKeyword(rs.getString("keyword"));
+                s.setSender(rs.getString("sender"));
+                s.setShortMessage(rs.getString("short_message"));
+                s.setDestination(rs.getString("destination"));
+                s.setPartnerCode(rs.getString("partner_code"));
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                Timestamp ts = rs.getTimestamp("created_date");
+                if (ts != null) {
+                    String createdDate = ts.toLocalDateTime().format(formatter);
+                    s.setCreatedDate(createdDate);
+                }
+
+                ts = rs.getTimestamp("send_time");
+                if (ts != null) {
+                    String sendTime = ts.toLocalDateTime().format(formatter);
+                    s.setSendTime(sendTime);
+                }
+                s.setStatus(rs.getString("status"));
+                s.setDescription(rs.getString("description"));
+                list.add(s);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return list;
     }
 }

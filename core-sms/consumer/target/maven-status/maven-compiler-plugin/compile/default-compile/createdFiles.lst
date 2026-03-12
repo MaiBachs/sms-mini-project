@@ -2,6 +2,7 @@ com\consumer\sms\service\impl\SmsServiceImpl.class
 com\consumer\sms\repository\SmsRepository.class
 com\consumer\sms\config\DbPool.class
 com\consumer\sms\util\Constant$SmsData.class
+com\consumer\sms\util\Constant$Property.class
 com\consumer\sms\consumer\SmsConsumer.class
 com\consumer\sms\service\RedisService.class
 com\consumer\sms\util\HttpClient.class

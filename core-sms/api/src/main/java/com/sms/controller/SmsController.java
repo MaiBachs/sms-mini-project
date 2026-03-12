@@ -11,8 +11,10 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 
 public class SmsController implements HttpHandler {
     private static final Logger log = LoggerFactory.getLogger(SmsController.class);
@@ -63,25 +65,44 @@ public class SmsController implements HttpHandler {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            String path = exchange.getRequestURI().getPath();
+            URI uri = exchange.getRequestURI();
+            String path = uri.getPath();
             String method = exchange.getRequestMethod();
-            if (Constant.SmsApiPath.SMS_REPORT.equals(path)
-                    && Constant.SmsApiMethod.GET.equalsIgnoreCase(method)) {
-                try {
+
+            try {
+                // report result
+                if (Constant.SmsApiPath.SMS_REPORT.equals(path)
+                        && Constant.SmsApiMethod.GET.equalsIgnoreCase(method)) {
+                    // simple JSON response of counts
                     GeneralResponse<ReportSmsResponse> resp = new GeneralResponse();
                     resp.setData(service.reportSms());
                     byte[] bytes = mapper.writeValueAsBytes(resp);
                     exchange.getResponseHeaders().add("Content-Type", "application/json");
                     exchange.sendResponseHeaders(200, bytes.length);
-                    OutputStream os = exchange.getResponseBody();
-                    os.write(bytes);
-                    os.close();
-                } catch (Exception e) {
-                    log.error("Error reporting", e);
-                    exchange.sendResponseHeaders(500, -1);
+                    try (OutputStream os = exchange.getResponseBody()) {
+                        os.write(bytes);
+                    }
+                    return;
                 }
-            } else {
+
+                // Export csv result
+                if (Constant.SmsApiPath.SMS_REPORT_EXPORT.equals(path)
+                        && Constant.SmsApiMethod.GET.equalsIgnoreCase(method)) {
+                    byte[] csv = service.exportReportCsv();
+                    exchange.getResponseHeaders().set("Content-Type", "text/csv; charset=UTF-8");
+                    exchange.getResponseHeaders().set("Content-Disposition", "attachment; filename=\"report.csv\"");
+                    exchange.sendResponseHeaders(200, csv.length);
+                    try (OutputStream os = exchange.getResponseBody()) {
+                        os.write(csv);
+                    }
+                    return;
+                }
+
+                // not handled
                 exchange.sendResponseHeaders(405, -1);
+            } catch (Exception e) {
+                log.error("Error reporting", e);
+                exchange.sendResponseHeaders(500, -1);
             }
         }
     }

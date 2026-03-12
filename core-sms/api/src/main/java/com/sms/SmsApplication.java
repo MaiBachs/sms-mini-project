@@ -2,6 +2,7 @@ package com.sms;
 
 import com.sms.controller.SmsController;
 import com.sms.util.DbPool;
+import com.sms.util.Constant;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -16,7 +17,8 @@ public class SmsApplication {
         DbPool.initialize();
         HttpServer server = HttpServer.create(new InetSocketAddress(8021), 0);
         server.createContext("/api/v1/sms", new SmsController());
-        server.createContext("/api/v1/sms/report", new SmsController.ReportHandler());
+        server.createContext(Constant.SmsApiPath.SMS_REPORT, new SmsController.ReportHandler());
+        server.createContext(Constant.SmsApiPath.SMS_REPORT_EXPORT, new SmsController.ReportHandler());
         server.setExecutor(null);
         server.start();
         log.info("Server started");

@@ -13,6 +13,7 @@ public class Constant {
     public static class SmsApiPath {
         public static final String SMS = "/api/v1/sms";
         public static final String SMS_REPORT = "/api/v1/sms/report";
+        public static final String SMS_REPORT_EXPORT = "/api/v1/sms/report/export";
     }
 
     public static class SmsApiMethod {
