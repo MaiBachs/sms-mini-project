@@ -54,6 +54,7 @@ public class SmsConsumer {
                 // push to delayQueue if max tps
                 log.warn("=== Max tps, push to queue delay with messageId {} ===", sms.getMessageId());
                 channel.basicPublish("", delayQueueName, null, message.getBytes());
+                channel.basicAck(tag, false);
                 return;
             }
             // Call API gateway
