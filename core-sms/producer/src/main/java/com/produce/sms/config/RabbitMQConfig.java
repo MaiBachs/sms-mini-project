@@ -5,12 +5,18 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.produce.sms.util.Constant;
 import java.util.Properties;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import com.rabbitmq.client.Channel;
 
 public class RabbitMQConfig {
     private Connection connection;
     private String exchange;
     private String queue;
     private String routingKey;
+
+    private BlockingQueue<Channel> channelPool;
+    private int poolSize = 10;
 
     public void init(Properties props) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
@@ -24,6 +30,7 @@ public class RabbitMQConfig {
         routingKey = props.getProperty(Constant.Property.RABBIT_ROUTING_KEY);
         connection = factory.newConnection();
         initTopology();
+        initChannelPool();
     }
 
     private void initTopology() throws Exception {
@@ -31,6 +38,25 @@ public class RabbitMQConfig {
             channel.exchangeDeclare(exchange, "direct", true);
             channel.queueDeclare(queue, true, false, false, null);
             channel.queueBind(queue, exchange, routingKey);
+        }
+    }
+
+    private void initChannelPool() throws Exception {
+        channelPool = new ArrayBlockingQueue<>(poolSize);
+        for (int i = 0; i < poolSize; i++) {
+            Channel channel = connection.createChannel();
+            channelPool.offer(channel);
+        }
+    }
+
+    public Channel borrowChannel() throws InterruptedException {
+        return channelPool.take();
+    }
+
+    public void returnChannel(Channel channel) {
+
+        if (channel != null) {
+            channelPool.offer(channel);
         }
     }
 

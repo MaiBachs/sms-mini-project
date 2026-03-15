@@ -14,17 +14,19 @@ import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
+import java.util.concurrent.*;
 
 public class SmsConsumer {
     private static final Logger log = LoggerFactory.getLogger(SmsConsumer.class);
     private final String queueName;
     private final String delayQueueName;
     private final Connection connection;
-    private Channel channel;
     private ObjectMapper objectMapper = new ObjectMapper();
     private String secretKey;
     private RedisService redisService;
     private SmsService smsService = new SmsServiceImpl();
+    private ExecutorService executor;
+    private long timeRetry;
 
     public SmsConsumer(Connection rabbitConnection, Properties props, Jedis jedis) {
         this.queueName = props.getProperty(Constant.Property.RABBIT_QUEUE);
@@ -32,19 +34,27 @@ public class SmsConsumer {
         this.secretKey = props.getProperty(Constant.Property.SECRET_KEY);
         this.connection = rabbitConnection;
         this.redisService = new RedisServiceImpl(jedis, Integer.parseInt(props.getProperty(Constant.Property.SMS_TPS)));
+        this.executor = Executors.newFixedThreadPool(Integer.parseInt(props.getProperty(Constant.Property.SCAN_THREAD)));
+        this.timeRetry = Long.parseLong(props.getProperty(Constant.Property.SMS_RETRY_DELAY));
     }
 
     public void start() throws Exception {
-        channel = connection.createChannel();
-        channel.basicConsume(
-                queueName,
-                false,
-                this::handleMessage,
-                consumerTag -> log.warn("Consumer cancelled: {}", consumerTag)
-        );
+        executor.submit(() -> {
+            try {
+                Channel channel = connection.createChannel();
+                channel.basicConsume(
+                        queueName,
+                        false,
+                        (consumerTag, delivery) -> handleMessage(consumerTag, channel, delivery),
+                        consumerTag -> log.warn("Consumer cancelled: {}", consumerTag)
+                );
+            } catch (Exception e) {
+                log.error("Error creating consumer", e);
+            }
+        });
     }
 
-    private void handleMessage(String consumerTag, Delivery delivery) {
+    private void handleMessage(String consumerTag, Channel channel, Delivery delivery) {
         String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
         long tag = delivery.getEnvelope().getDeliveryTag();
         try {
@@ -67,7 +77,7 @@ public class SmsConsumer {
             boolean checkSmsDuplicate = redisService.checkExist(sms.getMessageId(), sms.getShortMessage());
             if (!checkSmsDuplicate) {
                 // send sms
-                SmsResponse response = smsService.sendWithRetryAndUpdateStatusSms(sms);
+                SmsResponse response = smsService.sendWithRetryAndUpdateStatusSms(sms, timeRetry);
                 redisService.setStr(sms.getMessageId(), sms.getShortMessage());
                 log.info("Message {}, Response call gateway: {}", sms, response);
             } else {

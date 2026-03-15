@@ -18,7 +18,7 @@ public class SmsServiceImpl implements SmsService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public SmsResponse sendWithRetryAndUpdateStatusSms(SmsRequest sms) throws Exception {
+    public SmsResponse sendWithRetryAndUpdateStatusSms(SmsRequest sms, long timeRetry) throws Exception {
         SmsTest smsTest = smsRepository.findById(sms.getMessageId());
         if (smsTest == null) {
             log.error("Not found sms in database");
@@ -26,19 +26,20 @@ public class SmsServiceImpl implements SmsService {
         }
         SmsResponse response = null;
         log.info("=== Send sms and retry ===");
-        for (int i = 0; i <= 3; i++) {
+        for (int i = 0; i < 3; i++) {
             try {
                 String smsJson = objectMapper.writeValueAsString(sms);
                 String responseStr = HttpClient.postJson(urlGateway, smsJson);
                 response = objectMapper.readValue(responseStr, SmsResponse.class);
                 smsTest.setStatus(Constant.SmsStatus.COMPLETE);
                 smsRepository.updateStatusAndSendTime(smsTest.getMessageId(), Constant.SmsStatus.COMPLETE);
-                break;
+                return response;
             } catch (Exception e) {
                 log.error("=== Error: Retry send sms to gateway ===");
-                smsRepository.updateStatusAndSendTime(smsTest.getMessageId(), Constant.SmsStatus.FAILED);
+                Thread.sleep(timeRetry);
             }
         }
+        smsRepository.updateStatusAndSendTime(smsTest.getMessageId(), Constant.SmsStatus.FAILED);
         return response;
     }
 }

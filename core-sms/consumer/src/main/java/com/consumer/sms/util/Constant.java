@@ -34,6 +34,7 @@ public class Constant {
         public static final String POOL_MAXIMUM_POOL_SIZE = "pool.maximumPoolSize";
         public static final String SECRET_KEY = "secret.key";
         public static final String SMS_TPS = "sms.tps";
-        // other property keys can be added here
+        public static final String SMS_RETRY_DELAY = "sms.retry.delay";
+        public static final String SCAN_THREAD = "scan.thread";
     }
 }
