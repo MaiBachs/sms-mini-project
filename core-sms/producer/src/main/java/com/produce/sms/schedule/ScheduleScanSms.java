@@ -32,6 +32,7 @@ public class ScheduleScanSms {
         routingKey = props.getProperty(Constant.Property.RABBIT_ROUTING_KEY);
         scanInterval = Long.parseLong(props.getProperty(Constant.Property.SCAN_INTERVAL_MS));
         executor = Executors.newFixedThreadPool(Integer.parseInt(props.getProperty(Constant.Property.SCAN_THREAD)));
+        this.rabbitConnection = rabbitConnection;
     }
 
     public void start() {
